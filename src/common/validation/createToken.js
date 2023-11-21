@@ -2,8 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const createToken = async (user) => {
   try {
-    const secret =
-      process.env.JWT_SECRET || "jwtsecretforstoringalltheuserinfo";
+    const secret = process.env.JWT_SECRET;
 
     const payload = {
       user_id: user?._id,
@@ -19,8 +18,7 @@ const createToken = async (user) => {
 
 const verifyToken = (token) => {
   try {
-    const secret =
-      process.env.JWT_SECRET || "jwtsecretforstoringalltheuserinfo";
+    const secret = process.env.JWT_SECRET;
 
     const payload = jwt.verify(token, secret);
 
