@@ -1,10 +1,11 @@
 const { client } = require("../../../database");
 const { verifyToken } = require("../../common/validation/createToken");
+const { Order } = require("../../models/orders.model");
 
 // CREATE NEW ORDERS
 const createOrders = async (req, res) => {
   try {
-    const { product_id, order_status } = req.body;
+    const { product_id, quantity, order_status } = req.body;
     const token = req?.headers?.authorization?.split("Bearer ")[1];
 
     // CHECK IF PRODUCT ID PROVIDED
@@ -33,18 +34,17 @@ const createOrders = async (req, res) => {
         message: "Unauthorized user",
       });
     }
+    console.log(user);
 
-    const values = [product_id, user?.user_id, order_status];
-    const result = await client.query(
-      `insert into orders(product_id, user_id, order_status) values($1, $2, $3)`,
-      values
-    );
+    const newOrder = new Order({
+      user: user?.user_id,
+      product: product_id,
+      quantity,
+    });
 
-    if (result?.rows) {
-      return res
-        .status(201)
-        .json({ success: true, message: "New order added" });
-    }
+    await newOrder.save();
+
+    return res.status(201).json({ success: true, message: "New order added" });
   } catch (err) {
     console.error("error: ", err.message);
     res.status(400).json({
@@ -57,11 +57,9 @@ const createOrders = async (req, res) => {
 // GET ALL ORDERS
 const getAllOrders = async (req, res) => {
   try {
-    const result = await client.query(`select * from orders`);
+    const orders = await Order.find({});
 
-    if (result?.rows) {
-      return res.status(200).json({ success: true, products: result?.rows });
-    }
+    return res.status(200).json({ success: true, orders });
   } catch (err) {
     console.error("error: ", err.message);
     res.status(400).json({
