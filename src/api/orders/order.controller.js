@@ -93,15 +93,33 @@ const getOrderById = async (req, res) => {
 // GET ORDERS BY USER ID
 const getOrderByUserId = async (req, res) => {
   try {
-    const { userId } = req.body;
-    const result = await client.query(
-      `select * from orders where user_id = $1`,
-      [userId]
-    );
+    const token = req?.headers?.authorization?.split("Bearer ")[1];
 
-    if (result?.rows) {
-      return res.status(201).json({ success: true, orders: result?.rows });
+    // CHECK IF TOKEN PROVIDED
+    if (!token) {
+      return res.status(400).json({
+        error: true,
+        message: "Unauthorized user",
+      });
     }
+
+    // VERIFY TOKEN
+    const user = verifyToken(token);
+
+    // CHECK IF TOKEN VALID
+    if (!user) {
+      return res.status(400).json({
+        error: true,
+        message: "Unauthorized user",
+      });
+    }
+
+
+    const orders = await Order.find({user:user?.user_id}).populate("product")
+
+    return res
+      .status(200)
+      .json({ success: true, orders });
   } catch (err) {
     console.error("error: ", err.message);
     res.status(400).json({

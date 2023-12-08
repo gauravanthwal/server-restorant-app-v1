@@ -84,7 +84,7 @@ const removeFromCart = async (req, res) => {
       });
     }
 
-    await Cart.deleteMany({ user: user?.user_id, product });
+    await Cart.deleteOne({ user: user?.user_id, product });
 
     return res
       .status(200)
