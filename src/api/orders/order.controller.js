@@ -57,7 +57,7 @@ const createOrders = async (req, res) => {
 // GET ALL ORDERS
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find({}).populate("product").populate("user");
+    const orders = await Order.find({}).populate("product").populate("user").sort({createdAt: -1});
 
     return res.status(200).json({ success: true, orders });
   } catch (err) {
@@ -65,6 +65,35 @@ const getAllOrders = async (req, res) => {
     res.status(400).json({
       error: true,
       message: "Error occured while fetching orders",
+    });
+  }
+};
+
+// UPDATE ORDER STATUS
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { newOrderStatus } = req.body;
+    const { orderId } = req.params;
+
+    if (!newOrderStatus || !orderId) {
+      return res.status(400).json({
+        error: true,
+        message: "required field are missing",
+      });
+    }
+
+    const updated = await Order.findByIdAndUpdate(
+      orderId,
+      { order_status: newOrderStatus },
+      { new: true }
+    );
+
+    return res.status(200).json({ success: true, message: "Order updated." });
+  } catch (err) {
+    console.error("error: ", err.message);
+    res.status(400).json({
+      error: true,
+      message: "Error occured while creating new order",
     });
   }
 };
@@ -114,12 +143,11 @@ const getOrderByUserId = async (req, res) => {
       });
     }
 
+    const orders = await Order.find({ user: user?.user_id }).populate(
+      "product"
+    );
 
-    const orders = await Order.find({user:user?.user_id}).populate("product")
-
-    return res
-      .status(200)
-      .json({ success: true, orders });
+    return res.status(200).json({ success: true, orders });
   } catch (err) {
     console.error("error: ", err.message);
     res.status(400).json({
@@ -134,4 +162,5 @@ module.exports = {
   getAllOrders,
   getOrderById,
   getOrderByUserId,
+  updateOrderStatus,
 };

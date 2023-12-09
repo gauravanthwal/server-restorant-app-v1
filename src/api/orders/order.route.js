@@ -4,7 +4,9 @@ const {
   getAllOrders,
   getOrderById,
   getOrderByUserId,
+  updateOrderStatus,
 } = require("./order.controller");
+const { authUser } = require("../../middleware/authUser");
 const router = Router();
 
 // CREATE NEW ORDERS
@@ -18,6 +20,9 @@ router.get("/getById/:orderId", getOrderById);
 
 // GET ORDERS BY USERID
 router.get("/getByUserId", getOrderByUserId);
+
+// UPDATE ORDER STATUS
+router.put("/updateOrderStatus/:orderId", authUser, updateOrderStatus);
 
 //-------------- TO-DO --------------//
 
