@@ -57,7 +57,7 @@ const createOrders = async (req, res) => {
 // GET ALL ORDERS
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find({});
+    const orders = await Order.find({}).populate("product").populate("user");
 
     return res.status(200).json({ success: true, orders });
   } catch (err) {
