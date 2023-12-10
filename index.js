@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -9,6 +9,7 @@ const userRoute = require("./src/api/users/user.route.js");
 const productRoute = require("./src/api/products/product.route.js");
 const ordersRoute = require("./src/api/orders/order.route.js");
 const cartRoute = require("./src/api/carts/cart.route.js");
+const categoryRoute = require("./src/api/category/category.route.js");
 
 // DataBase setup
 connectDB();
@@ -22,9 +23,10 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/order", ordersRoute);
 app.use("/api/v1/cart", cartRoute);
+app.use("/api/v1/category", categoryRoute);
 
 app.use("*", (req, res) => {
-  res.status(404).json({message: 'Not found'})
+  res.status(404).json({ message: "Route not found" });
 });
 
 app.listen(PORT, () => console.log("server running on port ", PORT));

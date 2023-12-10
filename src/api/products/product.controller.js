@@ -91,9 +91,62 @@ const getProductsByCategory = async (req, res) => {
   }
 };
 
+// UPDATE PRODUCT BY ADMIN
+const updateProductById = async (req, res) => {
+  try {
+    const { product_name, price, product_photo } = req.body;
+    const { productId } = req.params;
+
+    if (!productId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No product found" });
+    }
+
+    const products = await Product.findByIdAndUpdate(
+      productId,
+      { product_name, price, product_photo },
+      { new: true }
+    );
+
+    return res.status(200).json({ success: true, message: "product updated" });
+  } catch (err) {
+    console.error("error: ", err.message);
+    res.status(400).json({
+      error: true,
+      message: "Error occured while fetching products",
+    });
+  }
+};
+
+// DELETE PRODUCT BY ADMIN
+const deleteProductById = async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    if (!productId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No product found" });
+    }
+
+    const products = await Product.findByIdAndDelete(productId);
+
+    return res.status(200).json({ success: true, message: "product deleted" });
+  } catch (err) {
+    console.error("error: ", err.message);
+    res.status(400).json({
+      error: true,
+      message: "Error occured while fetching products",
+    });
+  }
+};
+
 module.exports = {
   createProduct,
   getAllProducts,
   getProductsByCategory,
   getProductsById,
+  updateProductById,
+  deleteProductById,
 };
