@@ -36,7 +36,7 @@ const createProduct = async (req, res) => {
 // GET ALL PRODCTS
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
+    const products = await Product.find({}).populate("product_category");
 
     return res.status(200).json({ success: true, products });
   } catch (err) {
@@ -52,7 +52,9 @@ const getAllProducts = async (req, res) => {
 const getProductsById = async (req, res) => {
   try {
     const productId = req.params.productId;
-    const product = await Product.findOne({ _id: productId });
+    const product = await Product.findOne({ _id: productId }).populate(
+      "product_category"
+    );
 
     if (!product) {
       return res
@@ -94,7 +96,7 @@ const getProductsByCategory = async (req, res) => {
 // UPDATE PRODUCT BY ADMIN
 const updateProductById = async (req, res) => {
   try {
-    const { product_name, price, product_photo } = req.body;
+    const { product_name, price, product_photo, product_category } = req.body;
     const { productId } = req.params;
 
     if (!productId) {
@@ -105,7 +107,7 @@ const updateProductById = async (req, res) => {
 
     const products = await Product.findByIdAndUpdate(
       productId,
-      { product_name, price, product_photo },
+      { product_name, price, product_photo, product_category },
       { new: true }
     );
 
